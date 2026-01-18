@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ads Generator - Composio + Gemini
 
-## Getting Started
+An AI-powered ad assets generator built with Next.js, Composio ToolRouter, and Google Gemini.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 🖼️ **Image Generation**: Generate high-end product photography using Gemini Nano Banana
+- 🎬 **Video Generation**: Create cinematic product videos using Gemini Veo
+- 📝 **Ad Copy Generation**: Auto-generate headlines, descriptions, CTAs, and social captions
+- 🎨 **Brand Analysis**: AI extracts brand identity (colors, mood, subject) from uploaded images
+- 📐 **Multiple Aspect Ratios**: Support for 9:16, 3:4, 1:1, and 16:9
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **AI**: Composio ToolRouter + Gemini
+- **Styling**: Tailwind CSS
+- **Language**: TypeScript
+
+## Setup
+
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Configure environment**:
+   ```bash
+   cp .env.example .env.local
+   ```
+   Then add your `COMPOSIO_API_KEY` from [Composio Platform](https://platform.composio.dev/settings).
+
+3. **Connect Gemini Toolkit** (Required):
+   - Go to [Composio Platform](https://platform.composio.dev)
+   - Navigate to Auth Configs → Gemini
+   - Connect your Google AI account
+
+4. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000)
+
+## How It Works
+
+1. **Upload**: Drag & drop brand images
+2. **Configure**: Select how many assets per aspect ratio
+3. **Generate**: AI analyzes brand → creates prompts → generates assets
+4. **Download**: Get your images, videos, and ad copy
+
+## Composio Tools Used
+
+| Tool | Purpose |
+|------|---------|
+| `GEMINI_GENERATE_CONTENT` | Brand analysis, prompt generation, ad copy |
+| `GEMINI_GENERATE_IMAGE` | Image generation (Nano Banana) |
+| `GEMINI_GENERATE_VIDEOS` | Video generation (Veo) |
+| `GEMINI_WAIT_FOR_VIDEO` | Wait for video completion |
+
+## Project Structure
+
+```
+ads-gen/
+├── src/
+│   ├── app/
+│   │   ├── page.tsx        # Main UI
+│   │   └── actions.ts      # Server Actions (Composio calls)
+│   └── lib/
+│       └── composio.ts     # Composio client setup
+├── .env.example            # Environment template
+└── package.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## License
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
