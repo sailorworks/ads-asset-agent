@@ -265,16 +265,21 @@ export async function generateAssetAction(
     const typedResult = result as {
       url?: string;
       image_url?: string;
-      data?: { url?: string };
+      image?: { s3url?: string };
+      data?: { url?: string; image?: { s3url?: string } };
     };
     const imageUrl =
-      typedResult?.url || typedResult?.image_url || typedResult?.data?.url;
+      typedResult?.url ||
+      typedResult?.image_url ||
+      typedResult?.data?.url ||
+      typedResult?.image?.s3url ||
+      typedResult?.data?.image?.s3url;
 
     if (imageUrl) {
       return { url: imageUrl };
     }
 
-    throw new Error("No image URL returned from Gemini");
+    throw new Error(`No image URL returned from Gemini. Result: ${JSON.stringify(result)}`);
   } catch (error) {
     console.error("Image generation error:", error);
     throw error;
@@ -296,7 +301,7 @@ export async function generateVideoAction(
       prompt: videoPrompt,
       model: "veo-3.0-generate-001",
       aspect_ratio: aspectRatio,
-      duration_seconds: 10,
+      duration_seconds: 6,
     });
 
     const typedResult = result as {

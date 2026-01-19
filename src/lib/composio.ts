@@ -9,6 +9,9 @@ if (!composioApiKey) {
 
 export const composio = new Composio({
   apiKey: composioApiKey || "",
+  toolkitVersions: {
+    gemini: "latest", // Use "latest" for development, pin specific version in production
+  },
 });
 
 // Helper to execute a Composio tool
@@ -21,6 +24,7 @@ export async function executeTool(
     const result = await composio.tools.execute(toolName, {
       userId,
       arguments: params,
+      version: "20260114_00", // Specify version per execution
     });
 
     if (!result.successful) {
@@ -33,4 +37,3 @@ export async function executeTool(
     throw error;
   }
 }
-
