@@ -377,6 +377,13 @@ export async function generateVideoAction(
 ): Promise<{ operationName: string }> {
   const videoPrompt = "Cinematic, high-end product video, " + prompt;
 
+  console.log("=== VIDEO GENERATION START ===");
+  console.log("Original prompt:", prompt);
+  console.log("Full video prompt:", videoPrompt);
+  console.log("Aspect ratio:", aspectRatio);
+  console.log("Model: veo-3.0-generate-001");
+  console.log("Duration: 6 seconds");
+
   try {
     const result = await executeTool("GEMINI_GENERATE_VIDEOS", {
       prompt: videoPrompt,
@@ -384,6 +391,9 @@ export async function generateVideoAction(
       aspect_ratio: aspectRatio,
       duration_seconds: 6,
     });
+
+    console.log("=== RAW VIDEO GENERATION RESULT ===");
+    console.log(JSON.stringify(result, null, 2));
 
     const typedResult = result as {
       operation_name?: string;
@@ -396,12 +406,18 @@ export async function generateVideoAction(
       typedResult?.name;
 
     if (operationName) {
+      console.log("Video operation started successfully!");
+      console.log("Operation name:", operationName);
       return { operationName };
     }
 
+    console.error("=== VIDEO GENERATION FAILED ===");
+    console.error("No operation name in response");
     throw new Error("No operation name returned from Veo");
   } catch (error) {
-    console.error("Video generation error:", error);
+    console.error("=== VIDEO GENERATION ERROR ===");
+    console.error("Error type:", error instanceof Error ? error.constructor.name : typeof error);
+    console.error("Error message:", error instanceof Error ? error.message : String(error));
     throw error;
   }
 }
@@ -450,26 +466,51 @@ export async function checkVideoStatusAction(operationName: string): Promise<{
 export async function waitForVideoAction(
   operationName: string
 ): Promise<{ url: string }> {
+  console.log("=== WAITING FOR VIDEO ===");
+  console.log("Operation name:", operationName);
+  
   try {
     const result = await executeTool("GEMINI_WAIT_FOR_VIDEO", {
       operation_name: operationName,
     });
 
+    console.log("=== RAW WAIT FOR VIDEO RESULT ===");
+    console.log(JSON.stringify(result, null, 2));
+
     const typedResult = result as {
       url?: string;
       video_url?: string;
       data?: { url?: string };
+      video?: { uri?: string; s3url?: string };
     };
     const videoUrl =
-      typedResult?.url || typedResult?.video_url || typedResult?.data?.url;
+      typedResult?.url || 
+      typedResult?.video_url || 
+      typedResult?.data?.url ||
+      typedResult?.video?.uri ||
+      typedResult?.video?.s3url;
 
     if (videoUrl) {
+      console.log("Video ready! URL:", videoUrl);
       return { url: videoUrl };
     }
 
+    console.error("=== VIDEO WAIT FAILED ===");
+    console.error("No video URL found in result");
     throw new Error("No video URL returned");
   } catch (error) {
-    console.error("Wait for video error:", error);
+    console.error("=== WAIT FOR VIDEO ERROR ===");
+    console.error("Error type:", error instanceof Error ? error.constructor.name : typeof error);
+    console.error("Error message:", error instanceof Error ? error.message : String(error));
+    
+    if (error instanceof Error) {
+      if (error.message.includes("error code 13")) {
+        console.error("HINT: Error code 13 is a Gemini server-side issue.");
+        console.error("This is NOT a code issue - Veo 3 may be experiencing high demand or temporary outage.");
+        console.error("Try again later or reduce video count to 0 for now.");
+      }
+    }
+    
     throw error;
   }
 }
